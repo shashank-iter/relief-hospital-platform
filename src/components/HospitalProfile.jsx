@@ -24,9 +24,11 @@ import {
   Edit,
   ArrowLeft,
   CheckCircle,
+  LogOut,
   XCircle,
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import Cookies from "js-cookie";
 
 const bloodGroupLabels = {
   opos: "O+",
@@ -66,7 +68,7 @@ function HospitalProfile({ hospitalData }) {
   };
 
   return (
-    <div className="container mx-auto py-6 pb-16 px-4 max-w-5xl">
+    <div className="container mx-auto py-6 pb-24 px-4 max-w-5xl">
       {/* Header */}
       <div className="flex flex-col items-start space-y-4 justify-between mb-6">
         <div className="flex flex-col items-start space-y-4 space-x-4">
@@ -126,7 +128,9 @@ function HospitalProfile({ hospitalData }) {
               </div>
               <div className="flex items-center text-sm">
                 <Calendar className="h-4 w-4 mr-2 text-gray-500" />
-                <span className="text-gray-700 font-medium">Registered on:</span>
+                <span className="text-gray-700 font-medium">
+                  Registered on:
+                </span>
                 <span className="ml-2">
                   {formatDate(hospitalData?.createdAt)}
                 </span>
@@ -142,7 +146,9 @@ function HospitalProfile({ hospitalData }) {
               </div>
               <div className="flex items-center text-sm">
                 <Calendar className="h-4 w-4 mr-2 text-gray-500" />
-                <span className="text-gray-700 font-medium">Profile Last Updated:</span>
+                <span className="text-gray-700 font-medium">
+                  Profile Last Updated:
+                </span>
                 <span className="ml-2">
                   {formatDate(hospitalData?.updatedAt)}
                 </span>
@@ -474,6 +480,18 @@ function HospitalProfile({ hospitalData }) {
           </Card>
         </TabsContent>
       </Tabs>
+      <div className="flex justify-center">
+        <Button
+          variant="outline"
+          className="mt-4 mx-auto"
+          onClick={() => {
+            Cookies.remove("is_login");
+            router.push("/auth/login");
+          }}
+        >
+          <LogOut className="h-4 w-4 mr-2" /> Logout
+        </Button>
+      </div>
     </div>
   );
 }
