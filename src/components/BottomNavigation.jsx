@@ -1,5 +1,5 @@
 "use client";
-import { MdHome, MdEmergencyShare, MdDiversity3 } from "react-icons/md";
+import { MdHome, MdEmergencyShare } from "react-icons/md";
 import { CiUser } from "react-icons/ci";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -13,8 +13,8 @@ const navigation = [
   },
   {
     id: 2,
-    name: "Requests",
-    href: "/requests",
+    name: "Live Requests",
+    href: "/requests/live",
     icon: MdEmergencyShare,
   },
   {

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import HospitalRequestCard from "./HospitalRequestCard";
 
-export default function HospitalRequestsPage({ requests, title, status }) {
+export default function HospitalRequestsPage({ requests, title, status, refreshRequest }) {
   const router = useRouter();
   return (
     <div className="container mx-auto py-6 pb-24 px-4 max-w-6xl">
@@ -41,7 +41,7 @@ export default function HospitalRequestsPage({ requests, title, status }) {
           </div>
         ) : (
           requests.map((request) => (
-            <HospitalRequestCard key={request._id} request={request} />
+            <HospitalRequestCard key={request._id} request={request} refreshRequest={refreshRequest} />
           ))
         )}
       </div>

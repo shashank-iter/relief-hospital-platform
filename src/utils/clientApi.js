@@ -1,10 +1,9 @@
 "use client";
 
 import axios from "axios";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL;
-import { Toaster } from "sonner";
 
 // Response interceptor function
 const handleResponseError = async (error) => {

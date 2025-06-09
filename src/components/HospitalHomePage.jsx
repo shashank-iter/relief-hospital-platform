@@ -1,31 +1,44 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Building2, Clock, AlertCircle, CheckCircle, XCircle, MapPin, Users } from "lucide-react"
+"use client";
+import { useRouter } from "next/navigation";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Building2,
+  Clock,
+  AlertCircle,
+  CheckCircle,
+  XCircle,
+  MapPin,
+  Users,
+} from "lucide-react";
+import { toast } from "sonner";
+import { useState, useEffect } from "react";
+// Fix the import path - check if it's "Loader" or "Loder"
+import Loader from "./Loader"; // Changed from "./Loder" to "./Loader"
+import { clientGet } from "@/utils/clientApi";
 
 export default function HospitalHomePage() {
-  const [currentTime, setCurrentTime] = useState(new Date())
-  const [hospitalName] = useState("Sunrise Medical Center") // In a real app, this would come from hospital context
-  const router = useRouter()
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [hospitalName] = useState("Sunrise Medical Center");
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentTime(new Date())
-    }, 1000)
+      setCurrentTime(new Date());
+    }, 1000);
 
-    return () => clearInterval(timer)
-  }, [])
+    return () => clearInterval(timer);
+  }, []);
 
   const getGreeting = () => {
-    const hour = currentTime.getHours()
-    if (hour < 12) return "Good Morning"
-    if (hour < 17) return "Good Afternoon"
-    return "Good Evening"
-  }
+    const hour = currentTime.getHours();
+    if (hour < 12) return "Good Morning";
+    if (hour < 17) return "Good Afternoon";
+    return "Good Evening";
+  };
 
   const requestCategories = [
     {
@@ -81,92 +94,140 @@ export default function HospitalHomePage() {
       bgColor: "bg-gray-50",
       borderColor: "border-gray-200",
       count: 1,
-      route: "/hospital/requests/cancelled",
+      route: "/requests/cancelled",
     },
-  ]
+  ];
+
+  const getDashboardData = async () => {
+    try {
+      setIsLoading(true);
+      const response = await clientGet("/users/hospital/dashboard");
+      console.log(response);
+      setDashboardData(response.data);
+      localStorage.setItem("name", response?.data?.profile?.name);
+      localStorage.setItem("hospitalProfileId", response?.data?.profile?._id);
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to fetch dashboard data");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getDashboardData();
+  }, []);
+
+  // Simple loading component fallback
+  const LoadingComponent = () => (
+    <div className="flex items-center justify-center p-8">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen p-4 pb-24">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Greeting Banner */}
-        <Card className="bg-gradient-to-r from-green-600 to-emerald-600 text-white border-0 shadow-lg">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold">
-                  {getGreeting()}, {hospitalName}!
-                </h1>
-                <p className="text-green-100 mt-1">
-                  {currentTime.toLocaleDateString("en-US", {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </p>
-                <p className="text-green-100 text-sm">
-                  {currentTime.toLocaleTimeString("en-US", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit",
-                  })}
-                </p>
-              </div>
-              <div className="text-right">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                  <Building2 className="h-8 w-8 text-white" />
+        {dashboardData ? (
+          <Card className="bg-gradient-to-r from-green-600 to-emerald-600 text-white border-0 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-2xl font-bold">
+                    {getGreeting()}, {dashboardData?.profile?.name}!
+                  </h1>
+                  <p className="text-green-100 mt-1">
+                    {currentTime.toLocaleDateString("en-US", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
+                  <p className="text-green-100 text-sm">
+                    {currentTime.toLocaleTimeString("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                    })}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                    <Building2 className="h-8 w-8 text-white" />
+                  </div>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        ) : (
+          <div>
+            {/* Use the fallback component or conditional rendering */}
+            {typeof Loader !== "undefined" ? <Loader /> : <LoadingComponent />}
+          </div>
+        )}
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-          <Card className="border-l-4 border-l-red-500">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Active Emergencies</p>
-                  <p className="text-2xl font-bold text-red-600">10</p>
+        {dashboardData ? (
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+            <Card className="border-l-4 border-l-red-500">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Active Emergencies</p>
+                    <p className="text-2xl font-bold text-red-600">
+                      {dashboardData?.finalizedRequestsCount || "N/A"}
+                    </p>
+                  </div>
+                  <AlertCircle className="h-8 w-8 text-red-500" />
                 </div>
-                <AlertCircle className="h-8 w-8 text-red-500" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-l-4 border-l-blue-500">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Available Beds</p>
-                  <p className="text-2xl font-bold text-blue-600">35</p>
+              </CardContent>
+            </Card>
+            <Card className="border-l-4 border-l-blue-500">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Available Beds</p>
+                    <p className="text-2xl font-bold text-blue-600">
+                      {dashboardData?.totalAvailableBeds}
+                    </p>
+                  </div>
+                  <Users className="h-8 w-8 text-blue-500" />
                 </div>
-                <Users className="h-8 w-8 text-blue-500" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-l-4 border-l-green-500">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Cases Resolved Today</p>
-                  <p className="text-2xl font-bold text-green-600">8</p>
+              </CardContent>
+            </Card>
+            <Card className="border-l-4 border-l-green-500">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Cases Resolved</p>
+                    <p className="text-2xl font-bold text-green-600">
+                      {dashboardData?.resolvedRequestsCount}
+                    </p>
+                  </div>
+                  <CheckCircle className="h-8 w-8 text-green-500" />
                 </div>
-                <CheckCircle className="h-8 w-8 text-green-500" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              </CardContent>
+            </Card>
+          </div>
+        ) : (
+          <div>
+            {/* Use the fallback component or conditional rendering */}
+            {typeof Loader !== "undefined" ? <Loader /> : <LoadingComponent />}
+          </div>
+        )}
 
         {/* Request Categories */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Emergency Request Management</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            Emergency Request Management
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6">
             {requestCategories.map((category) => {
-              const IconComponent = category.icon
+              const IconComponent = category.icon;
               return (
-              <>
-                  <Card
+                <Card
                   key={category.title}
                   className={`cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105 ${category.borderColor} border-l-4`}
                   onClick={() => router.push(category.route)}
@@ -174,19 +235,23 @@ export default function HospitalHomePage() {
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div className={`p-3 rounded-full ${category.bgColor}`}>
-                        <IconComponent className={`h-6 w-6 ${category.textColor}`} />
+                        <IconComponent
+                          className={`h-6 w-6 ${category.textColor}`}
+                        />
                       </div>
-                      <Badge className={`${category.color} text-white`}>{category.count}</Badge>
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{category.title}</h3>
-                    <p className="text-sm text-gray-600 mb-4">{category.description}</p>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      {category.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-4">
+                      {category.description}
+                    </p>
                     <Button variant="outline" className="w-full">
                       View Requests
                     </Button>
                   </CardContent>
                 </Card>
-              </>
-              )
+              );
             })}
           </div>
         </div>
@@ -200,18 +265,22 @@ export default function HospitalHomePage() {
                   <MapPin className="h-6 w-6 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-blue-900 text-center">Hospital Location Services</h3>
+                  <h3 className="font-semibold text-blue-900 text-center">
+                    Hospital Location Services
+                  </h3>
                   <p className="text-sm text-blue-700 text-center">
-                    Manage your hospital's location visibility and emergency response radius
+                    Manage your hospital's location visibility and emergency
+                    response radius
                   </p>
                 </div>
               </div>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">Manage Location</Button>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                Manage Location
+              </Button>
             </div>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }
-

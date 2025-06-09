@@ -2,10 +2,12 @@
 
 import Image from "next/image";
 import HospitalHomePage from "@/components/HospitalHomePage";
-export default function Home() {
+import { withAuth } from "@/components/withAuth";
+function Home() {
   return (
     <>
       <HospitalHomePage />
     </>
   );
 }
+export default withAuth(Home);
