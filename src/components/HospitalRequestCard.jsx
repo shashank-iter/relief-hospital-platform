@@ -83,8 +83,9 @@ export default function HospitalRequestCard({ request, refreshRequest }) {
       toast.success(`Request accepted for ${request?.patientName}`);
       refreshRequest();
     } catch (error) {
-      console.log(error);
-      toast.error("Failed to accept request?. Please try again.");
+      toast.error("Something went wrong", {
+        description: error.message,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -100,7 +101,9 @@ export default function HospitalRequestCard({ request, refreshRequest }) {
       toast.success(`Request resolved for ${request?.patientName}`);
       refreshRequest();
     } catch (error) {
-      toast.error("Failed to resolve request?. Please try again.");
+     toast.error("Something went wrong", {
+        description: error.message,
+      });
     } finally {
       setIsLoading(false);
     }

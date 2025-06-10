@@ -162,8 +162,9 @@ export default function HospitalEditForm({ initialData }) {
       });
       router.push("/profile");
     } catch (error) {
-      console.log(error);
-      toast.error("Something went wrong, please try again");
+      toast.error("Something went wrong", {
+        description: error.message,
+      });
     } finally {
       setIsLoading(false);
     }

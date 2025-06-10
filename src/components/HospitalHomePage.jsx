@@ -107,8 +107,9 @@ export default function HospitalHomePage() {
       localStorage.setItem("name", response?.data?.profile?.name);
       localStorage.setItem("hospitalProfileId", response?.data?.profile?._id);
     } catch (err) {
-      console.log(err);
-      toast.error("Failed to fetch dashboard data");
+      toast.error("Something went wrong", {
+        description: err.message,
+      });
     } finally {
       setIsLoading(false);
     }
