@@ -36,7 +36,7 @@ export default function BottomNavigation() {
     return pathname.includes(href);
   };
 
-  if (!Cookies.get("is_login")) {
+  if (!Cookies.get("is_hospital_login")) {
     return <></>;
   }
 

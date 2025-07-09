@@ -11,7 +11,7 @@ export function withAuth(Component) {
     const [isClient, setIsClient] = useState(false)
 
     useEffect(() => {
-      const isLogin = Cookies.get('is_login')
+      const isLogin = Cookies.get('is_hospital_login')
 
       // Block access to auth pages if already logged in
       const isAuthRoute = pathname === '/auth/login' || pathname === '/auth/register'

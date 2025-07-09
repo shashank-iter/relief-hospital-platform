@@ -485,7 +485,7 @@ function HospitalProfile({ hospitalData }) {
           variant="outline"
           className="mt-4 mx-auto"
           onClick={() => {
-            Cookies.remove("is_login");
+            Cookies.remove("is_hospital_login");
             router.push("/auth/login");
           }}
         >
