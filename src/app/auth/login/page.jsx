@@ -58,7 +58,30 @@ const LoginForm = () => {
       // Handle successful login
 
       // set is_login from client side to life of refresh_token as our backend handles access token expiry and refresh automatically, on issue is going to be caused after refresh expries and then user should logout.
-      Cookies.set("is_login", 1, { expires: 365 * 24 * 60 * 60 * 1000 });
+      Cookies.set("is_login", 1, { expires: 365 });
+      Router.push("/");
+    } catch (e) {
+      console.log("Error:", e);
+      toast.error("Login failed");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const onDummyLogin = async () => {
+    setIsSubmitting(true);
+    try {
+      const res = await clientPost("/users/hospital/login", {
+        phoneNumber: "9876543212",
+        password: "jaishreeram",
+        role: "hospital",
+      });
+      console.log("Login response:", res);
+      toast.success("Login successful");
+      // Handle successful login
+
+      // set is_login from client side to life of refresh_token as our backend handles access token expiry and refresh automatically, on issue is going to be caused after refresh expries and then user should logout.
+      Cookies.set("is_login", 1, { expires: 365 });
       Router.push("/");
     } catch (e) {
       console.log("Error:", e);
@@ -156,6 +179,14 @@ const LoginForm = () => {
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Logging in" : "Login"}
+              </Button>
+              <Button
+                type="submit"
+                className="w-full bg-indigo-500 hover:bg-indigo-600 disabled:bg-gray-600"
+                disabled={isSubmitting}
+                onClick={onDummyLogin}
+              >
+                {isSubmitting ? "Logging in" : "Dummy Login"}
               </Button>
 
               {/* Register Link */}
